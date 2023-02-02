@@ -1,3 +1,3 @@
-# CardiacField: Improving Cardiac Function Assessment Via Neural Volumetric Representation of 2D Echocardiographic Images
+# CardiacField: Computational Echocardiography for Universal Screening
 
 The source code will be available soon.
