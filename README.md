@@ -26,3 +26,4 @@ This repository has been developed using Python v3.8 and Pytorch v1.10.0 on Ubun
     * Install `apex` following their [instruction](https://github.com/NVIDIA/apex#linux)
     * Install core requirements by `pip install -r requirements.txt`
 * Cuda extension: Upgrade `pip` to >= 22.1 and run `pip install models/csrc/` (please run this each time you `pull` the code)
+
