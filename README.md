@@ -12,7 +12,17 @@ This repository holds the Pytorch implementation of [CardiacField: Computational
 ```
 
 ## Introduction
-
-In this repository, detailed examples are provided to demonstrate the application of our code across three unique echocardiogram video datasets: the STRAUS Datasets, and both 2D and 3D Echocardiogram Video Datasets.
-
+In this repository, detailed examples are provided to demonstrate the application of our code across three unique echocardiogram video datasets: the STRAUS Datasets, and both 2D and 3D Echocardiogram Video Datasets. 
 ## Quickstart
+This repository has been developed using Python v3.8 and Pytorch v1.10.0 on Ubuntu 18.04. Our experiments were exclusively performed on an NVIDIA A100 GPU. For a complete list of dependencies, please refer to the [`requirements.txt`](requirements.txt). We recommend installing Python v3.8 from [Anaconda](https://www.anaconda.com/) and installing Pytorch (= 1.10.0) following guide on the [official instructions](https://pytorch.org/) according to your specific CUDA version. Please note, this implementation adheres to stringent requirements due to dependencies on certain libraries. Consequently, if installation issues arise due to hardware or software incompatibilities, we regrettably do not plan to extend support to other platforms, although contributions to address these issues are welcome.
+### Hardware
+* NVIDIA GPU with Compute Compatibility >= 75 and memory > 6GB, CUDA 11.3 (might work with older version)
+
+### Software
+* Clone this repo by `git clone https://github.com/cshennju/NeuralCMF.git`
+* Python libraries
+    * Install `torch-scatter` following their [instruction](https://github.com/rusty1s/pytorch_scatter#installation)
+    * Install `tinycudann` following their [instruction](https://github.com/NVlabs/tiny-cuda-nn#pytorch-extension) (pytorch extension)
+    * Install `apex` following their [instruction](https://github.com/NVIDIA/apex#linux)
+    * Install core requirements by `pip install -r requirements.txt`
+* Cuda extension: Upgrade `pip` to >= 22.1 and run `pip install models/csrc/` (please run this each time you `pull` the code)
