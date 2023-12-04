@@ -27,6 +27,10 @@ This repository has been developed using Python v3.8 and Pytorch v1.10.0 on Ubun
     * Install core requirements by `pip install -r requirements.txt`
 * Cuda extension: Upgrade `pip` to >= 22.1 and run `pip install models/csrc/` (please run this each time you `pull` the code)
 
+### :key: Training
+
+### :key: LV/RV Segmentation
+
 ## Acknowledgement
 This code is extended from the following repositories.
 - [ngp_pl](https://github.com/kwea123/ngp_pl)
