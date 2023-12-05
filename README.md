@@ -36,7 +36,7 @@ python train_heart.py --root_dir './2d_example/' --exp_name '/2d_example/'
 ```
 
 ### :key: LV/RV Segmentation
-In order to obtain the precise EDV and ESV to accurately calculate EF for cardiac function assessment, we first perform the uniform sampling on the reconstructed 3D heart to generate several 2D slices parallel to the apical four-chamber view, and then use the segmentation model developed [here](https://github.com/ys830/mmsegmentation) to automatically classify the area of the LV and RV. After the LV and RV segmentation, we calculate the volume of LV and RV according to the widely used Simpson’s rule in the clinical examinations. Here we provede a segmentation results demo in [segmentation folder](segmentation).
+In order to obtain the precise EDV and ESV to accurately calculate EF for cardiac function assessment, we first perform the uniform sampling on the reconstructed 3D heart to generate several 2D slices parallel to the apical four-chamber view, and then use the segmentation model developed [here](https://github.com/ys830/mmsegmentation) to automatically classify the area of the LV and RV. After the LV and RV segmentation, we calculate the volume of LV and RV according to the widely used Simpson’s rule in the clinical examinations.
 
 ## Acknowledgement
 This code is extended from the following repositories.
