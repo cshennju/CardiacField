@@ -29,14 +29,14 @@ This repository has been developed using Python v3.8 and Pytorch v1.10.0 on Ubun
 * Cuda extension: Upgrade `pip` to >= 22.1 and run `pip install models/csrc/` (please run this each time you `pull` the code)
 
 ### :key: Training
-For demonstrating the 3D heart reconstruction process, we have included a sample of 2D data along with its corresponding positional parameters in the [2d_example folder](2d_example) for demonstration. This data was acquired by rotating a 2DE probe 360 degrees . We then apply our proprietary methods for estimating positional parameters to determine the exact position of each image within the 3D structure of the heart. The code for these positional parameter estimation methods will be made available shortly.
+For demonstrating the 3D heart reconstruction process, we have included a sample of 2D data along with its corresponding positional parameters in the [2d_example folder](2d_example) for demonstration. This data was acquired by rotating a 2DE probe 360 degrees around apex of the heart. We then apply our proprietary methods for estimating positional parameters to determine the exact position of each image within the 3D structure of the heart. The code for these positional parameter estimation methods will be made available shortly.
 
 ```
 python train_heart.py --root_dir './2d_example/' --exp_name '/2d_example/'
 ```
 
 ### :key: LV/RV Segmentation
-In order to obtain the precise EDV and ESV to accurately calculate EF for cardiac function assessment, we first perform the uniform sampling on the reconstructed 3D heart to generate several 2D slices parallel to the apical four-chamber view, and then use the segmentation model developed [here](https://github.com/ys830/mmsegmentation) to automatically classify the area of the LV and RV. After the LV and RV segmentation, we calculate the volume of LV and RV according to the widely used Simpson’s rule in the clinical examinations. Here we provede a segmentation results demo in [segmentation folder](segmentation)
+In order to obtain the precise EDV and ESV to accurately calculate EF for cardiac function assessment, we first perform the uniform sampling on the reconstructed 3D heart to generate several 2D slices parallel to the apical four-chamber view, and then use the segmentation model developed [here](https://github.com/ys830/mmsegmentation) to automatically classify the area of the LV and RV. After the LV and RV segmentation, we calculate the volume of LV and RV according to the widely used Simpson’s rule in the clinical examinations. Here we provede a segmentation results demo in [segmentation folder](segmentation).
 
 ## Acknowledgement
 This code is extended from the following repositories.
