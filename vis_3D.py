@@ -14,7 +14,6 @@ def parse_args():
     parser.add_argument('--root_dir', type=str, required=True,
                         help='root directory of dataset')
     parser.add_argument('--dataset_name', type=str, default='heart',
-                        choices=['nerf', 'nsvf', 'colmap', 'nerfpp', 'rtmv'],
                         help='which dataset to train/test')
     return parser.parse_args()
 
