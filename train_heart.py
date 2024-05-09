@@ -2,21 +2,24 @@ import torch
 from torch import nn
 from opt import get_opts
 import os
+import glob
 import imageio
 import numpy as np
+import cv2
 from einops import rearrange
 
 # data
 from torch.utils.data import DataLoader
 from datasets import dataset_dict
-from datasets.points_utils import axisangle_to_R, get_points
+from datasets.ray_utils import axisangle_to_R, get_rays
 
 # models
 from models.networks import NGP
 # optimizer, losses
 from apex.optimizers import FusedAdam
 from torch.optim.lr_scheduler import CosineAnnealingLR
-from losses import Loss
+#from losses import NeRFLoss
+from ssimloss import S3IM
 
 # metrics
 from torchmetrics import PeakSignalNoiseRatio
@@ -32,48 +35,57 @@ from utils import slim_ckpt, load_ckpt
 
 import warnings; warnings.filterwarnings("ignore")
 
-class CardiacFieldSystem(LightningModule):
+class NeRFSystem(LightningModule):
     def __init__(self, hparams):
         super().__init__()
         self.save_hyperparameters(hparams)
-        self.loss = Loss()
+
+        #self.loss = NeRFLoss()
+        self.loss = S3IM(kernel_size=4, stride=4, repeat_time=10, patch_height=90, patch_width=90)
         self.train_psnr = PeakSignalNoiseRatio(data_range=1)
         self.val_psnr = PeakSignalNoiseRatio(data_range=1)
-        gray_act = 'Sigmoid'
-        self.model = NGP(gray_act=gray_act)
+        rgb_act = 'Sigmoid'
+        self.model = NGP(rgb_act=rgb_act)
 
     def forward(self, batch, split):
         if split=='train':
             poses = self.poses[batch['img_idxs']]
-            ini_position = self.ini_position[batch['pix_idxs']]
+            directions = self.directions[batch['pix_idxs']]
         else:
             poses = batch['pose']
             poses = poses.unsqueeze(0)
-            ini_position = self.ini_position
+            #print(poses.shape)
+            directions = self.directions
+            #directions = directions.unsqueeze(0)
+            #print(directions.shape)
 
         dR = axisangle_to_R(self.dR[batch['img_idxs']])
         poses[..., :3] = dR @ poses[..., :3]
         poses[..., 3] += self.dT[batch['img_idxs']]
 
-        position = get_points(ini_position, poses)
+        rays_d = get_rays(directions, poses)
 
-        return self.model(position)
+        return self.model(rays_d)
 
     def setup(self, stage):
         dataset = dataset_dict[self.hparams.dataset_name]
-        kwargs = {'root_dir': self.hparams.root_dir}
+        kwargs = {'root_dir': self.hparams.root_dir,
+                  'downsample': self.hparams.downsample}
         self.train_dataset = dataset(split=self.hparams.split, **kwargs)
         self.train_dataset.batch_size = self.hparams.batch_size
         self.test_dataset = dataset(split='test', **kwargs)
 
     def configure_optimizers(self):
-        self.register_buffer('ini_position', self.train_dataset.ini_position.to(self.device))
+        # define additional parameters
+        self.register_buffer('directions', self.train_dataset.directions.to(self.device))
         self.register_buffer('poses', self.train_dataset.poses.to(self.device))
+
         N = len(self.train_dataset.poses)
         self.register_parameter('dR',
             nn.Parameter(torch.zeros(N, 3, device=self.device)))
         self.register_parameter('dT',
             nn.Parameter(torch.zeros(N, 3, device=self.device)))
+
         load_ckpt(self.model, self.hparams.weight_path)
 
         net_params = []
@@ -106,10 +118,15 @@ class CardiacFieldSystem(LightningModule):
 
     def training_step(self, batch, batch_nb, *args):
         results = self(batch, split='train')
+        #print(results.shape)
         loss_d = self.loss(results, batch)
-        loss = sum(lo.mean() for lo in loss_d.values())
+        #loss_d = loss_d.unsqueeze(1)
+        #print(loss_d)
+        #loss = sum(lo.mean() for lo in loss_d.values())
+        #loss = sum(lo.mean() for lo in loss_d)
+        loss = loss_d.mean()
         with torch.no_grad():
-            self.train_psnr(results, batch['gray'])
+            self.train_psnr(results, batch['rgb'])
         self.log('lr', self.net_opt.param_groups[0]['lr'])
         self.log('train/loss', loss)
         self.log('train/psnr', self.train_psnr, True)
@@ -123,20 +140,20 @@ class CardiacFieldSystem(LightningModule):
             os.makedirs(self.val_dir, exist_ok=True)
 
     def validation_step(self, batch, batch_nb):
-        gray_gt = batch['gray']
+        rgb_gt = batch['rgb']
         results = self(batch, split='test')
 
         logs = {}
         # compute each metric per image
-        self.val_psnr(results, gray_gt)
+        self.val_psnr(results, rgb_gt)
         logs['psnr'] = self.val_psnr.compute()
         self.val_psnr.reset()
         w, h = self.train_dataset.img_wh
         if not self.hparams.no_save_test: # save test image to disk
             idx = batch['img_idxs']
-            gray_pred = rearrange(results.cpu().numpy(), '(h w) c -> h w c', h=h)
-            gray_pred = (gray_pred*255).astype(np.uint8)
-            imageio.imsave(os.path.join(self.val_dir, f'{idx:03d}.png'), gray_pred)
+            rgb_pred = rearrange(results.cpu().numpy(), '(h w) c -> h w c', h=h)
+            rgb_pred = (rgb_pred*255).astype(np.uint8)
+            imageio.imsave(os.path.join(self.val_dir, f'{idx:03d}.png'), rgb_pred)
         return logs
 
     def validation_epoch_end(self, outputs):
@@ -155,7 +172,7 @@ if __name__ == '__main__':
     hparams = get_opts()
     if hparams.val_only and (not hparams.ckpt_path):
         raise ValueError('You need to provide a @ckpt_path for validation!')
-    system = CardiacFieldSystem(hparams)
+    system = NeRFSystem(hparams)
 
     ckpt_cb = ModelCheckpoint(dirpath=f'ckpts/{hparams.dataset_name}/{hparams.exp_name}',
                               filename='{epoch:d}',

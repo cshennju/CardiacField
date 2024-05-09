@@ -47,7 +47,7 @@ python mat2nii.py
 In our repository, we've included an example checkpoint file located in the [ckpts](folder). Additionally, we provide the reconstructed 3D heart model in two formats: example_vol.mat (.mat format) and example_vol.nii.gz (NIfTI format).
 
 ### :key: LV/RV Segmentation
-In order to obtain the precise EDV and ESV to accurately calculate EF for cardiac function assessment, we first perform the uniform sampling on the reconstructed 3D heart to generate several 2D slices parallel to the apical four-chamber view, and then use the segmentation model developed [here](https://github.com/ys830/mmsegmentation) to automatically classify the area of the LV and RV. After the LV and RV segmentation, we calculate the volume of LV and RV according to the widely used Simpson’s rule in the clinical examinations.
+In order to obtain the precise EDV and ESV to accurately calculate EF for cardiac function assessment, we first perform the uniform sampling on the reconstructed 3D heart to generate several 2D slices parallel to the apical four-chamber view, and then use the segmentation model developed  to automatically classify the area of the LV and RV. After the LV and RV segmentation, we calculate the volume of LV and RV according to the widely used Simpson’s rule in the clinical examinations. (The model has been updated and will be available soon.)
 
 ## Acknowledgement
 This code is extended from the following repositories.
