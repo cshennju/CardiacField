@@ -1,13 +1,13 @@
-# CardiacField: Computational Echocardiography for Universal Screening
+# CardiacField: Computational Echocardiography for Automated Heart Function Estimation Using 2DE Probes
 
-This repository holds the Pytorch implementation of [CardiacField: Computational Echocardiography for Universal Screening](https://njuvision.github.io/CardiacField/). If you find our code useful in your research, please consider citing:
+This repository holds the Pytorch implementation of [CardiacField: Computational Echocardiography for Automated Heart Function Estimation Using 2DE Probes](https://njuvision.github.io/CardiacField/). If you find our code useful in your research, please consider citing:
 
 ```
-@article{shen2023cardiacfield,
-  title={CardiacField: Computational Echocardiography for Universal Screening},
+@article{shen2024cardiacfield,
+  title={CardiacField: Computational Echocardiography for Automated Heart Function Estimation Using 2DE Probes},
   author={Shen, Chengkang and Zhu, Hao and Zhou, You and Liu, Yu and Yi, Si and Dong, Lili and Zhao, Weipeng and Brady, David and Cao, Xun and Ma, Zhan and Lin, Yi},
-  journal={Research Square},
-  year={2023}
+  journal={arXiv preprint},
+  year={2024}
 }
 ```
 
@@ -48,6 +48,9 @@ In our repository, we've included an example checkpoint file located in the [ckp
 
 ### :key: LV/RV Segmentation
 In order to obtain the precise EDV and ESV to accurately calculate EF for cardiac function assessment, we first perform the uniform sampling on the reconstructed 3D heart to generate several 2D slices parallel to the apical four-chamber view, and then use the segmentation model developed  to automatically classify the area of the LV and RV. After the LV and RV segmentation, we calculate the volume of LV and RV according to the widely used Simpson’s rule in the clinical examinations. (The model has been updated and will be available soon.)
+
+### :key: Data Availability
+The data are currently being organized and will be released soon. You can use the example data in the meantime.
 
 ## Acknowledgement
 This code is extended from the following repositories.
