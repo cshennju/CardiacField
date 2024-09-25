@@ -4,10 +4,15 @@ This repository holds the Pytorch implementation of [CardiacField: Computational
 
 ```
 @article{shen2024cardiacfield,
-  title={CardiacField: Computational Echocardiography for Automated Heart Function Estimation Using 2DE Probes},
-  author={Shen, Chengkang and Zhu, Hao and Zhou, You and Liu, Yu and Yi, Si and Dong, Lili and Zhao, Weipeng and Brady, David and Cao, Xun and Ma, Zhan and Lin, Yi},
-  journal={arXiv preprint},
-  year={2024}
+  title = {CardiacField: Computational Echocardiography for Automated Heart Function Estimation Using 2DE Probes},
+  author = {Shen, Chengkang and Zhu, Hao and Zhou, You and Liu, Yu and Yi, Si and Dong, Lili and Zhao, Weipeng and Brady, David and Cao, Xun and Ma, Zhan and Lin, Yi},
+  journal = {arXiv preprint},
+  year = {2024}
+  pages = {ztae072},
+  year = {2024},
+  month = {09},
+  issn = {2634-3916},
+  doi = {10.1093/ehjdh/ztae072}
 }
 ```
 
