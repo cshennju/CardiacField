@@ -11,7 +11,7 @@ from einops import rearrange
 # data
 from torch.utils.data import DataLoader
 from datasets import dataset_dict
-from datasets.ray_utils import axisangle_to_R, get_rays
+from datasets.points_utils import axisangle_to_R, get_points
 
 # models
 from models.networks import NGP
@@ -63,7 +63,7 @@ class NeRFSystem(LightningModule):
         poses[..., :3] = dR @ poses[..., :3]
         poses[..., 3] += self.dT[batch['img_idxs']]
 
-        rays_d = get_rays(directions, poses)
+        rays_d = get_points(directions, poses)
 
         return self.model(rays_d)
 
