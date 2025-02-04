@@ -39,8 +39,6 @@ class NeRFSystem(LightningModule):
     def __init__(self, hparams):
         super().__init__()
         self.save_hyperparameters(hparams)
-
-        #self.loss = NeRFLoss()
         self.loss = S3IM(kernel_size=4, stride=4, repeat_time=10, patch_height=90, patch_width=90)
         self.train_psnr = PeakSignalNoiseRatio(data_range=1)
         self.val_psnr = PeakSignalNoiseRatio(data_range=1)
@@ -54,10 +52,7 @@ class NeRFSystem(LightningModule):
         else:
             poses = batch['pose']
             poses = poses.unsqueeze(0)
-            #print(poses.shape)
             directions = self.directions
-            #directions = directions.unsqueeze(0)
-            #print(directions.shape)
 
         dR = axisangle_to_R(self.dR[batch['img_idxs']])
         poses[..., :3] = dR @ poses[..., :3]
@@ -77,7 +72,7 @@ class NeRFSystem(LightningModule):
 
     def configure_optimizers(self):
         # define additional parameters
-        self.register_buffer('directions', self.train_dataset.directions.to(self.device))
+        self.register_buffer('directions', self.train_dataset.ini_position.to(self.device))
         self.register_buffer('poses', self.train_dataset.poses.to(self.device))
 
         N = len(self.train_dataset.poses)
@@ -100,7 +95,6 @@ class NeRFSystem(LightningModule):
         net_sch = CosineAnnealingLR(self.net_opt,
                                     self.hparams.num_epochs,
                                     self.hparams.lr/30)
-
         return opts, [net_sch]
 
     def train_dataloader(self):
@@ -118,12 +112,7 @@ class NeRFSystem(LightningModule):
 
     def training_step(self, batch, batch_nb, *args):
         results = self(batch, split='train')
-        #print(results.shape)
         loss_d = self.loss(results, batch)
-        #loss_d = loss_d.unsqueeze(1)
-        #print(loss_d)
-        #loss = sum(lo.mean() for lo in loss_d.values())
-        #loss = sum(lo.mean() for lo in loss_d)
         loss = loss_d.mean()
         with torch.no_grad():
             self.train_psnr(results, batch['rgb'])
