@@ -26,7 +26,7 @@ class S3IM(torch.nn.Module):
     def forward(self, src_vec, tar_vect):
         loss = 0.0
         index_list = []
-        tar_vec = tar_vect['rgb']
+        tar_vec = tar_vect['gray']
         #print(src_vec.shape)
         #print(tar_vec)
         for i in range(self.repeat_time):

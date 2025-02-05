@@ -42,8 +42,8 @@ class NeRFSystem(LightningModule):
         self.loss = S3IM(kernel_size=4, stride=4, repeat_time=10, patch_height=90, patch_width=90)
         self.train_psnr = PeakSignalNoiseRatio(data_range=1)
         self.val_psnr = PeakSignalNoiseRatio(data_range=1)
-        rgb_act = 'Sigmoid'
-        self.model = NGP(rgb_act=rgb_act)
+        gray_act = 'Sigmoid'
+        self.model = NGP(gray_act=gray_act)
 
     def forward(self, batch, split):
         if split=='train':
@@ -115,7 +115,7 @@ class NeRFSystem(LightningModule):
         loss_d = self.loss(results, batch)
         loss = loss_d.mean()
         with torch.no_grad():
-            self.train_psnr(results, batch['rgb'])
+            self.train_psnr(results, batch['gray'])
         self.log('lr', self.net_opt.param_groups[0]['lr'])
         self.log('train/loss', loss)
         self.log('train/psnr', self.train_psnr, True)
@@ -129,20 +129,20 @@ class NeRFSystem(LightningModule):
             os.makedirs(self.val_dir, exist_ok=True)
 
     def validation_step(self, batch, batch_nb):
-        rgb_gt = batch['rgb']
+        gray_gt = batch['gray']
         results = self(batch, split='test')
 
         logs = {}
         # compute each metric per image
-        self.val_psnr(results, rgb_gt)
+        self.val_psnr(results, gray_gt)
         logs['psnr'] = self.val_psnr.compute()
         self.val_psnr.reset()
         w, h = self.train_dataset.img_wh
         if not self.hparams.no_save_test: # save test image to disk
             idx = batch['img_idxs']
-            rgb_pred = rearrange(results.cpu().numpy(), '(h w) c -> h w c', h=h)
-            rgb_pred = (rgb_pred*255).astype(np.uint8)
-            imageio.imsave(os.path.join(self.val_dir, f'{idx:03d}.png'), rgb_pred)
+            gray_pred = rearrange(results.cpu().numpy(), '(h w) c -> h w c', h=h)
+            gray_pred = (gray_pred*255).astype(np.uint8)
+            imageio.imsave(os.path.join(self.val_dir, f'{idx:03d}.png'), gray_pred)
         return logs
 
     def validation_epoch_end(self, outputs):
