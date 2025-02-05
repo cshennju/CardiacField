@@ -13,7 +13,7 @@ def get_opts():
                         choices=['train', 'trainval', 'trainvaltest'],
                         help='use which split to train')
     # training options
-    parser.add_argument('--batch_size', type=int, default=8192, ##8192
+    parser.add_argument('--batch_size', type=int, default=8100, ##8192
                         help='number of rays in a batch')
     parser.add_argument('--num_epochs', type=int, default=15,
                         help='number of training epochs')
