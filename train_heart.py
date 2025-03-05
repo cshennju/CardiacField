@@ -141,7 +141,7 @@ class NeRFSystem(LightningModule):
             idx = batch['img_idxs']
             gray_pred = rearrange(results.cpu().numpy(), '(h w) c -> h w c', h=h)
             gray_pred = (gray_pred*255).astype(np.uint8)
-            imageio.imsave(os.path.join(self.val_dir, f'{idx:03d}.png'), gray_pred)
+            imageio.imsave(os.path.join(self.val_dir, f'{idx:03d}.png'), gray_pred[:, :, 0])
         return logs
 
     def validation_epoch_end(self, outputs):
